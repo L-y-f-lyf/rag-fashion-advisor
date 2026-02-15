@@ -7,6 +7,16 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from file_history_store import get_history
 import config_data as config
 from vector_store import VectorStoreService
+# rag.py
+from langchain_community.embeddings import DashScopeEmbeddings
+
+class RagService:
+    def __init__(self, api_key):  # 新增api_key参数
+        self.embedding = DashScopeEmbeddings(
+            model=config.embedding_model_name,
+            dashscope_api_key=api_key  # 使用传入的api_key
+        )
+        # 其他初始化逻辑...
 
 # 定义打印提示词的函数
 def print_prompt(prompt):

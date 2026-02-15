@@ -112,7 +112,7 @@ st.sidebar.header("API 配置")
 user_api_key = st.sidebar.text_input(
     "请输入你的 DashScope API Key",
     type="password",
-    help="输入后即可使用，不会消耗开发者的额度"
+    help="输入后即可使用"
 )
 
 # 检查用户是否输入了密钥

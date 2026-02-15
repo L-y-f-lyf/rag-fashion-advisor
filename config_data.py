@@ -1,5 +1,5 @@
-import os
-dashscope_api_key = os.getenv("DASHSCOPE_API_KEY")
+# import os
+# dashscope_api_key = os.getenv("DASHSCOPE_API_KEY")
 
 md5_path = "data/md5.txt"
 
