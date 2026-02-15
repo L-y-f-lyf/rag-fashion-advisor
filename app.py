@@ -72,12 +72,31 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ====================== 侧边栏API密钥配置（必须放在最前面） ======================
+st.sidebar.header("API 配置")
+user_api_key = st.sidebar.text_input(
+    "请输入你的 DashScope API Key",
+    type="password",
+    help="输入后即可使用，不会消耗开发者的额度"
+)
+
+# 检查用户是否输入了密钥，未输入则停止运行
+if not user_api_key:
+    st.warning("请先在侧边栏输入你的 API Key 才能使用应用")
+    st.stop()
+
 # ====================== 会话初始化 ======================
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# 初始化RagService，使用用户输入的API密钥
 if "rag_service" not in st.session_state:
-    st.session_state.rag_service = RagService()
+    st.session_state.rag_service = RagService(api_key=user_api_key)
+
+# 会话配置
+session_config = {
+    "configurable": {"session_id": "user_001"}
+}
 
 # ====================== 顶部栏 ======================
 col1, col2, col3 = st.columns([3,1,1])
@@ -99,43 +118,6 @@ for msg in st.session_state.messages:
 
 # ====================== 聊天输入 ======================
 prompt = st.chat_input("请问我：春天穿什么颜色？日常怎么穿搭？...")
-
-session_config = {
-    "configurable": {"session_id": "user_001"}
-}
-
-# 页面标题
-st.title("RAG Fashion Advisor 🧥")
-
-# 侧边栏添加API密钥输入
-st.sidebar.header("API 配置")
-user_api_key = st.sidebar.text_input(
-    "请输入你的 DashScope API Key",
-    type="password",
-    help="输入后即可使用"
-)
-
-# 检查用户是否输入了密钥
-if not user_api_key:
-    st.warning("请先在侧边栏输入你的 API Key 才能使用应用")
-    st.stop()
-
-# 导入并初始化RagService（使用用户提供的密钥）
-from rag import RagService
-rag_service = RagService(api_key=user_api_key)
-
-# 后续的业务逻辑（比如提问框、回答展示）
-st.subheader("请输入你的穿搭问题")
-user_question = st.text_input("问题")
-
-if st.button("获取穿搭建议"):
-    if user_question:
-        with st.spinner("正在生成建议..."):
-            answer = rag_service.get_answer(user_question)
-            st.success("生成完成！")
-            st.write(answer)
-    else:
-        st.error("请输入你的问题")
 
 if prompt:
     # 显示用户消息

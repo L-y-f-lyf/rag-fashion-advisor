@@ -7,53 +7,45 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from file_history_store import get_history
 import config_data as config
 from vector_store import VectorStoreService
-# rag.py
-from langchain_community.embeddings import DashScopeEmbeddings
 
-class RagService:
-    def __init__(self, api_key):  # 新增api_key参数
-        self.embedding = DashScopeEmbeddings(
-            model=config.embedding_model_name,
-            dashscope_api_key=api_key  # 使用传入的api_key
-        )
-        # 其他初始化逻辑...
 
 # 定义打印提示词的函数
 def print_prompt(prompt):
     """打印提示词并返回原prompt，不中断链执行"""
-    print("="*50)
+    print("=" * 50)
     print("📜 最终传给大模型的完整提示词（格式化）：")
     print(prompt.to_string())
-    print("="*50)
+    print("=" * 50)
     print("🔍 提示词原始结构：")
     print(prompt)
-    print("="*50)
+    print("=" * 50)
     return prompt
 
+
 class RagService(object):
-    def __init__(self):
-        # 2. 初始化向量检索服务
+    def __init__(self, api_key):  # 接收用户传入的API密钥
+        # 2. 初始化向量检索服务（使用用户传入的API密钥）
         self.vector_service = VectorStoreService(
             embedding=DashScopeEmbeddings(
                 model=config.embedding_model_name,
-                dashscope_api_key=config.dashscope_api_key
+                dashscope_api_key=api_key  # 替换为用户传入的密钥
             )
         )
 
-        # 3. 定义提示词模板
+        # 3. 初始化大模型（使用用户传入的API密钥）
+        self.chat_model = ChatTongyi(
+            model=config.chat_model_name,
+            dashscope_api_key=api_key,  # 替换为用户传入的密钥
+            temperature=0.1
+        )
+
+        # 4. 定义提示词模板
         self.prompt_template = ChatPromptTemplate.from_messages([
             ("system", "以我提供的已知参考资料为主，简洁和专业的回答用户问题。参考资料：{context}."),
-            ("system","并且我提供用户的对话历史记录，如下："),
+            ("system", "并且我提供用户的对话历史记录，如下："),
             MessagesPlaceholder(variable_name="history"),
             ("user", "请回答用户提问：{input}")
         ])
-
-        # 4. 初始化大模型
-        self.chat_model = ChatTongyi(
-            model=config.chat_model_name,
-            dashscope_api_key=config.dashscope_api_key,
-            temperature=0.1
-        )
 
         # 5. 构建执行链
         self.chain = self._get_chain()
@@ -80,13 +72,13 @@ class RagService(object):
             return format_docs(docs)  # 手动调用格式化函数
 
         chain = (
-            RunnablePassthrough.assign(
-                # 用RunnableLambda包装get_context，转为可运行对象
-                context=lambda x: RunnableLambda(get_context).invoke(x["input"])
-            )
-            | self.prompt_template          # 填充提示词模板
-            | RunnableLambda(print_prompt)  # 打印提示词
-            | self.chat_model               # 传给大模型
+                RunnablePassthrough.assign(
+                    # 用RunnableLambda包装get_context，转为可运行对象
+                    context=lambda x: RunnableLambda(get_context).invoke(x["input"])
+                )
+                | self.prompt_template  # 填充提示词模板
+                | RunnableLambda(print_prompt)  # 打印提示词
+                | self.chat_model  # 传给大模型
         )
 
         # 包装成带消息历史的链
@@ -99,7 +91,11 @@ class RagService(object):
         )
         return conversation_chain
 
+
 if __name__ == "__main__":
+    # 测试用：手动输入API密钥（实际运行时由app.py传入）
+    test_api_key = "你的测试API密钥"
+
     # 1. 定义会话配置
     session_config = {
         "configurable": {
@@ -107,8 +103,8 @@ if __name__ == "__main__":
         }
     }
 
-    # 2. 调用链
-    rag_service = RagService()
+    # 2. 调用链（传入测试API密钥）
+    rag_service = RagService(api_key=test_api_key)
     res = rag_service.chain.invoke(
         {"input": "春天穿什么颜色的衣服"},
         config=session_config
