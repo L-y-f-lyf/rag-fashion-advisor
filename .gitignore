@@ -1,0 +1,19 @@
+# Python 缓存与环境
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Streamlit 配置
+*.streamlit
+
+# 向量库（不想传就去掉前面 #）
+# chroma_db/
+
+# 系统垃圾文件
+.DS_Store
