@@ -1,0 +1,21 @@
+============================================================
+Testing app startup
+============================================================
+
+App imported successfully: <fastapi.applications.FastAPI object at 0x000001A73D3D78C0>
+
+Routes BEFORE startup:
+  /openapi.json
+  /docs
+  /docs/oauth2-redirect
+  /redoc
+  /static
+  /
+  /health
+
+Triggering startup events...
+Traceback (most recent call last):
+  File "C:\Users\yafei\PycharmProjects\PythonProject1\test_startup.py", line 23, in <module>
+    asyncio.run(app.event_handler("startup"))()
+                ^^^^^^^^^^^^^^^^^
+AttributeError: 'FastAPI' object has no attribute 'event_handler'. Did you mean: 'add_event_handler'?

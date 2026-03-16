@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(findstr:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(start:*)",
+      "Bash(powershell:*)",
+      "Bash(C:/Users/yafei/AppData/Local/Programs/Python/Python312/python.exe:*)",
+      "Bash(taskkill:*)",
+      "Bash(curl:*)",
+      "Bash(netstat:*)",
+      "Bash(Get-Process python:*)",
+      "Bash(cp:*)",
+      "Read(//c/Users/y/PycharmProjects/PythonProject1/**)",
+      "Bash(dir)",
+      "Bash(删除有问题的 tools.py)"
+    ]
+  }
+}

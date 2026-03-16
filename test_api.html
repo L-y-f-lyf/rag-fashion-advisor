@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>测试注册 API</title>
+</head>
+<body>
+    <h1>测试注册 API</h1>
+    <input type="text" id="username" placeholder="用户名" value="testuser123">
+    <input type="password" id="password" placeholder="密码" value="testpass123">
+    <button onclick="testRegister()">测试注册</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testRegister() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = '正在请求...';
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/auth/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+
+                const text = await response.text();
+                resultEl.textContent = `状态码：${response.status}\n响应头：${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}\n响应内容：${text}`;
+
+                // 尝试解析 JSON
+                try {
+                    const json = JSON.parse(text);
+                    resultEl.textContent += `\n\nJSON 解析成功：${JSON.stringify(json, null, 2)}`;
+                } catch (e) {
+                    resultEl.textContent += `\n\nJSON 解析失败：${e.message}`;
+                }
+            } catch (error) {
+                resultEl.textContent = `请求失败：${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

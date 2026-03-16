@@ -1,0 +1,10 @@
+Testing import...
+SUCCESS! App imported: <fastapi.applications.FastAPI object at 0x0000013849EC7440>
+
+Routes:
+  ['HEAD', 'GET'] /openapi.json
+  ['HEAD', 'GET'] /docs
+  ['HEAD', 'GET'] /docs/oauth2-redirect
+  ['HEAD', 'GET'] /redoc
+  ['GET'] /
+  ['GET'] /health

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>穿搭智能顾问 Agent 系统</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <h1>👔 穿搭智能顾问 Agent 系统</h1>
+            <p class="subtitle">基于 LangChain Agent 的智能穿搭推荐</p>
+        </header>
+
+        <!-- API 密钥配置区域 -->
+        <div class="api-config">
+            <div class="config-box">
+                <label for="apiKey" class="config-label">
+                    <span class="icon">🔑</span> 通义千问 API Key
+                </label>
+                <input
+                    type="password"
+                    id="apiKey"
+                    class="config-input"
+                    placeholder="请输入你的 API Key"
+                    onkeyup="saveApiKey()"
+                >
+                <span class="config-hint">输入后自动保存，下次使用无需重复输入</span>
+            </div>
+        </div>
+
+        <!-- 标签页 -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="rag" onclick="switchTab('rag')">
+                <span class="tab-icon">📚</span> RAG 问答
+            </button>
+            <button class="tab-btn" data-tab="agent" onclick="switchTab('agent')">
+                <span class="tab-icon">🤖</</span> Agent 智能推荐
+            </button>
+        </div>
+
+        <!-- 标签页内容 -->
+        <div class="tab-content">
+            <!-- RAG 问答页面 -->
+            <div id="ragTab" class="tab-pane active">
+                <div class="chat-container">
+                    <div class="messages" id="ragMessages">
+                        <div class="message system">
+                            <div class="message-content">
+                                欢迎使用穿搭知识库问答系统！
+                                <br><br>
+                                您可以询问任何穿搭相关的问题，我会从知识库中为您检索相关信息。
+                                <br><br>
+                                例如：
+                                <ul class="example-list">
+                                    <li>春天适合穿什么颜色的衣服？</li>
+                                    <li>梨形身材怎么穿搭？</li>
+                                    <li>通勤场合的穿搭原则是什么？</li>
+                                    <li>韩系风格有什么特点？</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-area">
+                        <input
+                            type="text"
+                            id="ragInput"
+                            class="chat-input"
+                            placeholder="请输入您的穿搭问题..."
+                            onkeypress="if(event.key==='Enter') sendRAGMessage()"
+                        >
+                        <button class="send-btn" onclick="sendRAGMessage()">
+                            <span class="btn-icon">发送</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 智能推荐页面 -->
+            <div id="agentTab" class="tab-pane">
+                <div class="agent-container">
+                    <!-- 左侧：表单 -->
+                    <div class="form-section">
+                        <h3 class="section-title">📋 请选择您的穿搭需求</h3>
+
+                        <div class="form-row">
+                            <label class="form-label">性别</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="男" checked>
+                                    <span class="radio-text">男</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="女">
+                                    <span class="radio-text">女</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <label class="form-label">场景</label>
+                            <select id="scene" class="form-select">
+                                <option value="通勤">🏢 通勤</option>
+                                <option value="约会">💑 约会</option>
+                                <option value="运动">🏃 运动</option>
+                                <option value="正式">🎊 正式</option>
+                                <option value="休闲">☕ 休闲</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label class="form-label">体型</label>
+                            <select id="bodyType" class="form-select">
+                                <option value="梨形">🍐 梨形（上身）</option>
+                                <option value="苹果形">🍎 苹果形（腰粗）</option>
+                                <option value="沙漏形">⏳ 沙漏形（腰细）</option>
+                                <option value="直筒形">📏 直筒形（匀称）</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label class="form-label">风格</label>
+                            <select id="style" class="form-select">
+                                <option value="极简">⬜ 极简</option>
+                                <option value="轻熟">💄 轻熟</option>
+                                <option value="休闲">👕 休闲</option>
+                                <option value="韩系">🌸 韩系</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label class="form-label">额外需求</label>
+                            <textarea
+                                id="additionalRequest"
+                                class="form-textarea"
+                                placeholder="例如：：希望显瘦一点、想要温柔一点、预算1000元以内..."
+                            ></textarea>
+                        </div>
+
+                        <button class="generate-btn" onclick="generateOutfit()">
+                            <span class="btn-icon">✨</span> 生成穿搭方案
+                        </button>
+
+                        <!-- 也可以直接与 Agent 聊天 -->
+                        <div class="divider">
+                            <span class="divider-text">或者</span>
+                        </div>
+
+                        <div class="chat-quick-area">
+                            <input
+                                type="text"
+                                id="agentInput"
+                                class="chat-input"
+                                placeholder="直接描述您的需求，例如：我是个女生，梨形身材，要去约会..."
+                                onkeypress="if(event.key==='Enter') sendAgentMessage()"
+                            >
+                            <button class="send-btn secondary" onclick="sendAgentMessage()">
+                                <span class="btn-icon">发送</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：结果展示 -->
+                    <div class="result-section">
+                        <h3 class="section-title">📝 穿搭方案</h3>
+                        <div class="result-content" id="resultContent">
+                            <div class="placeholder">
+                                <span class="placeholder-icon">👗</span>
+                                <p>在左侧选择您的需求后，点击"生成穿搭方案"按钮</p>
+                                <p class="placeholder-hint">或者直接在输入框描述您的需求</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">正在为您生成穿搭方案...</p>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

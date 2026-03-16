@@ -1,0 +1,21 @@
+# ==================== Fashion Advisor Agent System Dependencies ====================
+# Use latest compatible versions
+
+# FastAPI and related
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# Pydantic - use v2
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# LangChain - use latest versions
+langchain>=0.2.0
+langchain-community>=0.2.0
+langchain-core>=0.2.0
+
+# DashScope SDK
+dashscope>=1.14.0
+
+# Environment variable management
+python-dotenv>=1.0.0
